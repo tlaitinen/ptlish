@@ -106,7 +106,7 @@ expr: not expr { UnExpr Not $2 }
     | expr shr expr { BinExpr BitShr $1 $3 }
     | expr caret expr { BinExpr BitXor $1 $3 }
     | expr when expr { BinExpr When $1 $3 }
-    | id colon expr { VarExpr $1 $3 }
+    | id colon maybeExpr { VarExpr $1 $3 }
     | id {% do
         (x:_) <- get
         case Map.lookup $1 x of
@@ -122,6 +122,9 @@ expr: not expr { UnExpr Not $2 }
             put (tail xs)
             return (LambdaExpr $1 $2) }
     | int { ConstExpr $1 }
+
+maybeExpr: expr { $1 }
+         | { ConstExpr 0 }
 
 lambdaDef: backslash id rarrow {% do
     prev <- get
