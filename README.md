@@ -1,7 +1,13 @@
 ptlish
 ======
 
-DSL for functional embedded device operational specifications using integer arithmetic and past time operators.
+DSL for functional embedded device operational specifications using integer
+arithmetic and past time operators. 
+
+Features:
+ * Anonymous functions for modular definitions.
+ * Common subexpression elimination.
+ * Parser and pretty-printer to S-Expressions (to simplify parsing in embedded device).
 
 Example:
 ```
