@@ -46,13 +46,15 @@ import qualified Data.Map  as Map
     slash { Tk _ TSlash }
     mod { Tk _ TMod  }
     int { Tk _ (TInt $$) }
+    when { Tk _ TWhen }
     id { Tk _ (TId $$) }
     backslash { Tk _ TBackslash }
+%left when   
 %left and or
 %left lt gt le ge equals ne
 %left shl shr amp pipe caret
 %left plus minus
-%left asterisk div mod
+%left asterisk slash mod
 
 %monad { ParseM }
 
@@ -102,6 +104,7 @@ expr: not expr { UnExpr Not $2 }
     | expr shl expr { BinExpr BitShl $1 $3 }
     | expr shr expr { BinExpr BitShr $1 $3 }
     | expr caret expr { BinExpr BitXor $1 $3 }
+    | expr when expr { BinExpr When $1 $3 }
     | id colon expr { VarExpr $1 $3 }
     | id {% do
         (x:_) <- get

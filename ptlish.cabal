@@ -18,19 +18,17 @@ library
                    , Language.Ptlish.AST
                    , Language.Ptlish.Lexer
                    , Language.Ptlish.Parser
+                   , Language.Ptlish.Simplify
                     
     build-depends: base >= 4 && < 5
                  , array
                  , mtl
                  , containers
-                
-
-
                  
     Build-tools: alex, happy
 
     ghc-options: -Wall
 
-executable parse
-    main-is: tests/parse.hs
-    build-depends: base, ptlish
+--executable parse
+--    main-is: tests/parse.hs
+--    build-depends: base, ptlish, containers, mtl

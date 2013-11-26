@@ -16,13 +16,14 @@ data Expr = UnExpr UnOp Expr
           | UnboundExpr Name
           | ApplyExpr Expr Expr
           | LambdaExpr Name Expr
-          deriving (Show)
+          deriving (Show, Eq, Ord)
           
 data UnOp = Not | Abs | Old | BitNot
-          deriving (Show)
+          deriving (Show, Eq, Ord)
 data BinOp = And | Or | Lt | Gt | Le | Eq | Ne | Ge | Add | Sub
            | Mul | Div | Mod | BitAnd | BitOr | BitShl | BitShr | BitXor
-           deriving (Show) 
+           | When
+           deriving (Show, Eq, Ord) 
 
 data Action = Action Name [Expr] deriving (Show)
 

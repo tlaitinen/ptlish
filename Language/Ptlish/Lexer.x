@@ -40,6 +40,7 @@ tokens :-
     \/ { mkT TSlash }
     \\ { mkT TBackslash }
     "mod" { mkT TMod }
+    "when" { mkT TWhen }
     (\-|"") $digit+ { mkTvar (TInt . read) }
     [ $alpha \_ ][ $alpha \. \_ $digit \? ]*  { mkTvar TId  }
 {
@@ -74,6 +75,7 @@ data TokenType = TLParen
     | TSlash
     | TBackslash
     | TMod
+    | TWhen
     | TInt Int
     | TId String
     deriving (Show)
