@@ -1,0 +1,36 @@
+name:           ptlish
+version:        0.0.1
+license:        BSD3
+license-file:   LICENSE
+author:         Tero Laitinen 
+maintainer:     Tero Laitinen
+synopsis:       DSL for functional embedded device operational specifications with past time.
+description:    A parser, common subexpression elimination and pretty printer for a domain specific language designed for embedded device operational specifications involving some past time logic.
+category:       Language
+stability:      Experimental
+cabal-version:  >= 1.8
+build-type:     Simple
+homepage:       https://github.com/tlaitinen/ptlish
+
+library     
+
+    exposed-modules: Language.Ptlish
+                   , Language.Ptlish.AST
+                   , Language.Ptlish.Lexer
+                   , Language.Ptlish.Parser
+                    
+    build-depends: base >= 4 && < 5
+                 , array
+                 , mtl
+                 , containers
+                
+
+
+                 
+    Build-tools: alex, happy
+
+    ghc-options: -Wall
+
+executable parse
+    main-is: tests/parse.hs
+    build-depends: base, ptlish
