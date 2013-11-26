@@ -41,6 +41,7 @@ tokens :-
     \\ { mkT TBackslash }
     "mod" { mkT TMod }
     "when" { mkT TWhen }
+    \, { mkT TComma} 
     (\-|"") $digit+ { mkTvar (TInt . read) }
     [ $alpha \_ ][ $alpha \. \_ $digit \? ]*  { mkTvar TId  }
 {
@@ -48,6 +49,7 @@ tokens :-
 data Token = Tk AlexPosn TokenType deriving (Show)
 data TokenType = TLParen 
     | TRParen
+    | TComma
     | TNot
     | TAbs
     | TOld

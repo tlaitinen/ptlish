@@ -49,6 +49,7 @@ import qualified Data.Map  as Map
     when { Tk _ TWhen }
     id { Tk _ (TId $$) }
     backslash { Tk _ TBackslash }
+    comma { Tk _ TComma }
 %left when   
 %left and or
 %left lt gt le ge equals ne
@@ -79,8 +80,8 @@ actions: action { [$1]}
 
 action: rarrow id exprs { Action $2 (reverse $3) } 
 
-exprs: { [] }
-     | exprs expr { $2 : $1 }
+exprs: expr { [$1] }
+     | exprs comma expr { $3 : $1 }
 
 expr: not expr { UnExpr Not $2 }
     | abs expr { UnExpr Abs $2 }
@@ -114,7 +115,7 @@ expr: not expr { UnExpr Not $2 }
             Nothing -> fail ("Undeclared identifier : " ++ $1)
         }
     | lparen expr rparen { $2 }
-    | expr lparen expr rparen { ApplyExpr $1 $3 }
+    | expr expr  { ApplyExpr $1 $2 }
     | lambdaDef expr  
         {% do
             xs <- get
