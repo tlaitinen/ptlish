@@ -17,13 +17,13 @@ tokens :-
     "abs" { mkT TAbs }
     "old" { mkT TOld }
     \~ { mkT TTilde }
-    "and" { mkT TAnd }
-    "or" { mkT TOr }
+    "&&" { mkT TAnd }
+    "||" { mkT TOr }
     \< { mkT TLt }
     \> { mkT TGt }
     \<\= { mkT TLe }
     \>\= { mkT TGe }
-    \= { mkT TEquals }
+    \=\= { mkT TEquals }
     \/\= { mkT TNe }
     \-\> { mkT TRArrow }
     \+ { mkT TPlus }

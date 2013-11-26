@@ -123,7 +123,7 @@ expr: not expr { UnExpr Not $2 }
             return (LambdaExpr $1 $2) }
     | int { ConstExpr $1 }
 
-lambdaDef: backslash id {% do
+lambdaDef: backslash id rarrow {% do
     prev <- get
     put ((Map.insert $2 Param (head prev)):prev)
     return $2        
