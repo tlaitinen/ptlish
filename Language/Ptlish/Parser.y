@@ -56,7 +56,7 @@ import qualified Data.Map  as Map
 %left shl shr amp pipe caret
 %left plus minus
 %left asterisk slash mod
-
+%left EXPR
 %monad { ParseM }
 
 %%
@@ -115,7 +115,7 @@ expr: not expr { UnExpr Not $2 }
             Nothing -> fail ("Undeclared identifier : " ++ $1)
         }
     | lparen expr rparen { $2 }
-    | expr expr  { ApplyExpr $1 $2 }
+    | expr expr %prec EXPR { ApplyExpr $1 $2 }
     | lambdaDef expr  
         {% do
             xs <- get
