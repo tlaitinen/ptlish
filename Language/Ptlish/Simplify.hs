@@ -73,12 +73,17 @@ matchExpr e = do
         Nothing -> do
             let n = "_" ++ (show $ stNextExprId s)
             put $ s { 
-                stNextExprId = stNextExprId s + 1, 
-                stExtra = (n,e):stExtra s,                     
                 stExprMap = Map.insert e n (stExprMap s),
                 stScope = Map.insert n e (stScope s)
             }
+            when (notLambda e) $ modify $ \s -> s {
+                    stNextExprId = stNextExprId s + 1, 
+                    stExtra = (n,e):stExtra s
+                }
             return $ RefExpr n
+    where
+        notLambda (LambdaExpr _ _) = False
+        notLambda _ = True
 
 normalize :: Expr -> SimplifyM Expr
 normalize (UnExpr op e) = do
