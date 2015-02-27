@@ -52,7 +52,7 @@ import qualified Data.Map  as Map
     comma { Tk _ TComma }
 %left when   
 %left and or
-%left lt gt le ge equals ne
+%nonassoc lt gt le ge equals ne
 %left shl shr amp pipe caret
 %left plus minus
 %left asterisk slash mod
@@ -106,6 +106,17 @@ expr: not expr { UnExpr Not $2 }
     | expr shr expr { BinExpr BitShr $1 $3 }
     | expr caret expr { BinExpr BitXor $1 $3 }
     | expr when expr { BinExpr When $1 $3 }
+    | juxt { $1 }
+    | lambdaDef expr  
+        {% do
+            xs <- get
+            put (tail xs)
+            return (LambdaExpr $1 $2) }
+
+juxt: juxt atom { ApplyExpr $1 $2 }
+    | atom { $1 }
+atom:
+     int { ConstExpr $1 }
     | id colon maybeExpr { VarExpr $1 $3 }
     | id {% do
         (x:_) <- get
@@ -115,14 +126,6 @@ expr: not expr { UnExpr Not $2 }
             Nothing -> fail ("Undeclared identifier : " ++ $1)
         }
     | lparen expr rparen { $2 }
-    | expr expr %prec EXPR { ApplyExpr $1 $2 }
-    | lambdaDef expr  
-        {% do
-            xs <- get
-            put (tail xs)
-            return (LambdaExpr $1 $2) }
-    | int { ConstExpr $1 }
-
 maybeExpr: expr { $1 }
          | { ConstExpr 0 }
 
