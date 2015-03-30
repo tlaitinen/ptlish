@@ -3,6 +3,7 @@ module Language.Ptlish.Simplify (simplify) where
 import Language.Ptlish.AST
 import Control.Monad.State
 import qualified Data.Map as Map
+import Data.Maybe 
 type SimplifyM = State SimplifyState
 
 data SimplifyState = SimplifyState {
@@ -19,17 +20,23 @@ simplify ptl = let (v, s) = runState (simplify' ptl) initState in
     [ (Def n e) | (n,e) <- reverse $ stExtra s ] ++ v
 
 simplify' :: [Stmt] -> SimplifyM [Stmt]
-simplify' = mapM simplifyStmt
+simplify' = (fmap catMaybes) . mapM simplifyStmt
 
-simplifyStmt :: Stmt -> SimplifyM Stmt
+notLambda :: Expr -> Bool
+notLambda (LambdaExpr _ _) = False
+notLambda _ = True
+
+simplifyStmt :: Stmt -> SimplifyM (Maybe Stmt)
 simplifyStmt (Def n e) = do
     e' <- simplifyExpr e
     s <- get
     put $ s { stScope = Map.insert n e (stScope s) }
-    return $ (Def n e')
+    return $ if notLambda e'
+        then Just $ (Def n e')
+        else Nothing
 simplifyStmt (Trigger n as) = do
     as' <- mapM simplifyAction as                             
-    return $ Trigger n as'
+    return $ Just $ Trigger n as'
     
 simplifyAction :: Action -> SimplifyM Action
 simplifyAction (Action n exprs) = do
@@ -70,21 +77,17 @@ matchExpr e = do
     s <- get
     case Map.lookup e (stExprMap s) of
         Just n -> return $ RefExpr n
-        Nothing -> do
-            let n = "_" ++ (show $ stNextExprId s)
-            put $ s { 
-                stExprMap = Map.insert e n (stExprMap s),
-                stScope = Map.insert n e (stScope s)
-            }
-            when (notLambda e) $ modify $ \s -> s {
+        Nothing -> if notLambda e 
+            then do
+                let n = "_" ++ (show $ stNextExprId s)
+                put $ s { 
+                    stExprMap = Map.insert e n (stExprMap s),
+                    stScope = Map.insert n e (stScope s),
                     stNextExprId = stNextExprId s + 1, 
                     stExtra = (n,e):stExtra s
                 }
-            return $ RefExpr n
-    where
-        notLambda (LambdaExpr _ _) = False
-        notLambda _ = True
-
+                return $ RefExpr n
+            else return e    
 normalize :: Expr -> SimplifyM Expr
 normalize (UnExpr op e) = do
     e' <- normalize e
